@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.swing.text.html.parser.Entity;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.jboss.logging.NDC.clear;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -43,6 +44,56 @@ class MemberRepositoryTest {
 
         assertThat(findMember).isSameAs(saveMember);
         assertThat(findMember).isSameAs(member);
+
+    }
+
+    @Test
+    public void 오류_회원가입시_아이디가_없음() throws Exception{
+        //given
+        Member member = Member.builder().password("1234567890").name("Member1").nickName("NickName1").role(Role.USER).age(22).build();
+
+        //when, then
+        assertThrows(Exception.class, () -> memberRepository.save(member));
+    }
+
+    @Test
+    public void 오류_회원가입시_이름_없음() throws  Exception{
+        //given
+        Member member = Member.builder().password("1234567890").username("username").nickName("NickName1").role(Role.USER).age(22).build();
+
+        //when, then
+        assertThrows(Exception.class, () -> memberRepository.save(member));
+    }
+
+    @Test
+    public void 오류_회원가입시_닉네임_없음() throws Exception{
+        //given
+        Member member = Member.builder().password("1234567890").username("username").name("Member1").role(Role.USER).age(22).build();
+
+        //when, then
+        assertThrows(Exception.class, () -> memberRepository.save(member));
+    }
+
+    @Test
+    public void 오류_회원가입시_나이가_없음() throws Exception {
+        //given
+        Member member = Member.builder().username("username").password("1234567890").name("Member1").role(Role.USER).nickName("NickName1").build();
+
+        //when, then
+        assertThrows(Exception.class, () -> memberRepository.save(member));
+    }
+
+    @Test
+    public void 오류_회원가입시_중복된_아이디가_있음(){
+        //given
+        Member member1 = Member.builder().username("username").password("1234567890").name("Member1").nickName("NickName1").role(Role.USER).age(22).build();
+        Member member2 = Member.builder().username("username").password("1234567890").name("Member1").nickName("NickName1").role(Role.USER).age(22).build();
+
+        memberRepository.save(member1);
+        clear();
+
+        //when, then
+        assertThrows(Exception.class, () -> memberRepository.save(member2));
 
     }
 }
