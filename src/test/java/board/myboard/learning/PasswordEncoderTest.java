@@ -20,12 +20,12 @@ public class PasswordEncoderTest {
         String password = "노혁Nohhyuk";
 
         //when
-        String encodePassword = passwordEncoder.encode(password);
+        String encodePassword = passwordEncoder.encode(password); //password encode
 
         //then
-        assertThat(encodePassword).startsWith("{");
-        assertThat(encodePassword).contains("{bcrypt}");
-        assertThat(encodePassword).isNotEqualTo(password);
+        assertThat(encodePassword).startsWith("{"); // encodePassword에 '{' 로 시작하는지 확인
+        assertThat(encodePassword).contains("{bcrypt}"); // encodePassword에 '{bcrypt}' 포합하고 있는지 확인
+        assertThat(encodePassword).isNotEqualTo(password); // 기존에 있는 password와 encodePassword와 같지않은지 확인
 
     }
 }
