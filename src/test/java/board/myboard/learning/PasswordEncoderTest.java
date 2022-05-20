@@ -46,4 +46,16 @@ public class PasswordEncoderTest {
         assertThat(encodePassword).isNotEqualTo(encodePassword2);
 
     }
+
+    @Test
+    public void 암호화된_비밀번호_매치() throws Exception{
+        //given
+        String password = "노혁Nohhyuk";
+
+        //when
+        String encodePassword = passwordEncoder.encode(password);
+
+        //then
+        assertThat(passwordEncoder.matches(password, encodePassword)).isTrue();
+    }
 }
