@@ -51,11 +51,11 @@ public class Member extends BaseTimeEntity {
         this.nickName = nickName;
     }
 
-    public void updataAge(int age){
+    public void updateAge(int age){
         this.age = age;
     }
 
-    // 패스워크 암호화 //
+    // 패스워드 암호화 //
     public void encodePassword(PasswordEncoder passwordEncoder){
         this.password = passwordEncoder.encode(password);
     }
