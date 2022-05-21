@@ -1,6 +1,9 @@
 package board.myboard.global.config;
 
+import board.myboard.domain.member.service.LoginService;
 import board.myboard.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
+import board.myboard.global.login.handler.LoginFailureHandler;
+import board.myboard.global.login.handler.LoginSuccessJWTProviderHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final LoginService loginService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -45,12 +49,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManager(){ // 2 - AuthenticationManager 등록
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(); // DaoAuthenticationProvider 사용
         provider.setPasswordEncoder(passwordEncoder()); // PasswordEncoder로는 PasswordEncoderFactories.createDelegationPasswordEncoder() 사용
+        provider.setUserDetailsService(loginService);
         return new ProviderManager(provider);
+    }
+
+    @Bean
+    public LoginSuccessJWTProviderHandler loginSuccessJWTProviderHandler(){
+        return new LoginSuccessJWTProviderHandler();
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler(){
+        return new LoginFailureHandler();
     }
 
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter(){
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
+        jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
+        jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJWTProviderHandler());
+        jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
         return jsonUsernamePasswordLoginFilter;
     }
 
